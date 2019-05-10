@@ -1,6 +1,7 @@
 package com.hanayue.ayuemobieview.amount.fragments;
 
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hanayue.ayuemobieview.R;
+import com.hanayue.ayuemobieview.amount.activities.AmountActivity;
 import com.hanayue.ayuemobieview.amount.activities.AmountAnalysisActivity;
 import com.hanayue.ayuemobieview.amount.adapter.AmountGroupAdapter;
 import com.hanayue.ayuemobieview.amount.model.Amount;
@@ -59,7 +61,13 @@ public class AmountFragment extends Fragment {
         });
 
         binding.toMonthBtn.setOnClickListener(v -> {
-            startActivity(new Intent(getActivity(), AmountAnalysisActivity.class));
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            String[] items = {"收入", "支出"};
+            builder.setItems(items, ((dialogInterface, i) -> {
+                Intent intent = new Intent(getActivity(), AmountAnalysisActivity.class);
+                intent.putExtra(AmountActivity.AMOUNT_TYPE, items[i]);
+                startActivity(intent);
+            })).create().show();
         });
         return binding.getRoot();
     }

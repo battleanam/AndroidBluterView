@@ -55,6 +55,7 @@ public class AmountAnalysisActivity extends AppCompatActivity {
      * 从简单存储中获取登录信息
      */
     private void getUserInfo() {
+        type = getIntent().getStringExtra(AmountActivity.AMOUNT_TYPE);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String userInfoStr = preferences.getString("userInfo", null);
         if (userInfoStr != null) userInfo = JSONObject.parseObject(userInfoStr);
@@ -91,7 +92,7 @@ public class AmountAnalysisActivity extends AppCompatActivity {
         }
 
         showBarChart(keys, values);
-
+        onBarSelect(keys.size()-1, keys, values);
     }
 
     /**
@@ -161,15 +162,12 @@ public class AmountAnalysisActivity extends AppCompatActivity {
         ColumnChartData chartData = new ColumnChartData(columns);
         chartData.setAxisYRight(yAxis);
         chartData.setAxisXBottom(xAxis);
-//        chartData.setStacked(true);
         chartData.setValueLabelBackgroundAuto(false);
         chartData.setBaseValue(0);// 设置基准线
-//        chartData.setFillRatio(0); // 设置柱子宽度
         chartData.setStacked(true);
 //        chartData.setValueLabelBackgroundEnabled(false); // 禁用数据背景颜色
         chartData.setValueLabelBackgroundColor(Color.TRANSPARENT);
         chartData.setValueLabelTextSize(ChartUtils.sp2px(0.7f, 12));
-//        chartData.setValueLabelsTextColor(0);
         chart.setColumnChartData(chartData);
 
         Viewport viewport = new Viewport(chart.getMaximumViewport());
@@ -181,7 +179,7 @@ public class AmountAnalysisActivity extends AppCompatActivity {
     /**
      * 当柱图的柱子被选中的事件
      *
-     * @param columnIndex    柱子的下标
+     * @param columnIndex 柱子的下标
      */
     private void onBarSelect(int columnIndex, List<String> xAxisKeys, List<Float> yAxisKeys) {
 
@@ -205,24 +203,38 @@ public class AmountAnalysisActivity extends AppCompatActivity {
             AmountStat stat = new AmountStat(sourceType, count);
             stats.add(stat);
         }
-        showPieChart(stats);
+        showPieChart(stats, yAxisKeys.get(columnIndex));
     }
 
-    private void showPieChart(List<AmountStat> stats) {
+    /**
+     * 展示饼图
+     * @param stats 数据源
+     * @param count 当月花费总量
+     */
+    private void showPieChart(List<AmountStat> stats, float count) {
         PieChartView pieChart = binding.pieChart;
         pieChart.setZoomEnabled(false); // 禁用缩放
 
         List<SliceValue> pieValues = new ArrayList<>();
+        float radiusCount = 0;
         for (AmountStat stat : stats) {
             SliceValue pieValue = new SliceValue(stat.getValue(), ChartUtils.nextColor());
-            pieValue.setLabel(stat.getxAxis());
+            float radius = stat.getValue() / count * 100;
+            String label = String.format(Locale.getDefault(), "%.2f", radius);
+            if (stats.indexOf(stat) == stats.size() - 1) {
+                label = String.format(Locale.getDefault(), "%.2f", 100f - radiusCount);
+            }
+            radiusCount += radius;
+            pieValue.setLabel(stat.getxAxis() + "(" + label + "%)");
             pieValues.add(pieValue);
         }
 
         PieChartData pieChartData = new PieChartData(pieValues);
         pieChartData.setHasLabels(true); // 设置显示标签
-        pieChartData.setHasLabelsOnlyForSelected(true); // 设置只有选中时显示标签
-//        pieChartData.setHasCenterCircle(true); // 在中间掏一个圈
+        pieChartData.setHasLabelsOutside(true);
+        pieChartData.setValueLabelBackgroundEnabled(false);
+        pieChartData.setValueLabelsTextColor(Color.GRAY);
+        pieChartData.setValueLabelTextSize(ChartUtils.sp2px(.7f, 12));
         pieChartData.setSlicesSpacing(1); // 每部分之间的间隔
         pieChart.setPieChartData(pieChartData);
 
