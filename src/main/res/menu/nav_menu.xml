@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_note"
+            android:icon="@mipmap/bianqian"
+            android:title="@string/便签管理"/>
+
+        <item
+        android:id="@+id/nav_notice"
+        android:icon="@mipmap/tixing"
+        android:title="@string/事件提醒"/>
+
+        <item
+            android:id="@+id/nav_money"
+            android:icon="@mipmap/qianbao"
+            android:title="@string/收支管理"/>
+
+        <item
+            android:id="@+id/nav_weather"
+            android:icon="@mipmap/tianqi"
+            android:title="@string/天气预报"/>
+    </group>
+</menu>

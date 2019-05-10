@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:andriod = "http://schemas.android.com/apk/res/android"
+    andriod:id="@+id/splashRl"
+    andriod:layout_width="match_parent"
+    andriod:layout_height="match_parent">
+
+    <Button
+        andriod:id="@+id/splashBtn"
+        andriod:layout_width="275dp"
+        andriod:layout_height="60dp"
+        andriod:layout_alignParentBottom="true"
+        andriod:layout_marginBottom="200dp"
+        andriod:layout_centerHorizontal="true"
+        andriod:background="@color/colorBlue"
+        andriod:gravity="center"
+        andriod:text="@string/splashLoginBtnText"
+        andriod:textSize="22sp"
+
+        />
+</RelativeLayout>

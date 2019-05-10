@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout>
+
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".amount.activities.AmountAnalysisActivity">
+
+        <RelativeLayout
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_margin="16dp"
+            android:gravity="center"
+            >
+            <TextView
+                android:id="@+id/time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:text="@string/立即注册"
+                />
+            <TextView
+                android:id="@+id/count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/time"
+                android:textSize="32sp"
+                android:textColor="#000"
+                android:text="2328.37"
+                />
+            <TextView
+                android:layout_alignEnd="@id/count"
+                android:layout_alignBottom="@id/count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000"
+                android:textSize="12sp"
+                android:text="@string/元"
+                android:layout_marginEnd="-14dp"
+                android:layout_marginBottom="8dp"
+                />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/line2"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_marginBottom="16dp"
+            android:background="#ddd"
+            android:layout_below="@id/title"
+            />
+
+        <lecho.lib.hellocharts.view.ColumnChartView
+            android:id="@+id/column_chart"
+            android:layout_below="@id/line2"
+            android:layout_width="wrap_content"
+            android:layout_height="200dp" />
+
+        <TextView
+            android:id="@+id/title_pie"
+            android:layout_below="@id/column_chart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/支出分布"
+            android:layout_margin="16dp"
+            />
+
+        <TextView
+            android:id="@+id/line1"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="#ddd"
+            android:layout_below="@id/title_pie"
+            />
+
+        <lecho.lib.hellocharts.view.PieChartView
+            android:id="@+id/pie_chart"
+            android:layout_below="@id/line1"
+            android:layout_width="wrap_content"
+            android:layout_height="200dp"
+            android:layout_margin="16dp"
+            />
+
+    </RelativeLayout>
+
+</layout>
