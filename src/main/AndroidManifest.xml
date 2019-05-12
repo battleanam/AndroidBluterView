@@ -22,12 +22,21 @@
         android:roundIcon="@drawable/icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".amount.activities.AmountAnalysisActivity"></activity>
+        <activity android:name=".notice.activities.NoticeHistoryActivity"></activity>
+
+        <service
+            android:name=".notice.services.NoticeService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <activity android:name=".amount.activities.AmountAnalysisActivity" />
         <activity android:name=".amount.activities.AmountActivity" />
         <activity android:name=".notice.activities.NoticeActivity" />
-        <activity android:name=".note.activities.NoteActivity" />
+        <activity
+            android:name=".note.activities.NoteActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".user.activities.RegisterActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".MainActivity" android:launchMode="singleInstance"/>
 
         <service
             android:name=".weather.services.WeatherAutoUpdateService"

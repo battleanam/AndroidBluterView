@@ -6,6 +6,7 @@ import org.litepal.crud.LitePalSupport;
 public class Note extends LitePalSupport {
     @Column(unique = true, nullable = false)
     private long id;
+    private String userId;
     private String title;
     private String content;
     private long noteTime;
@@ -24,6 +25,14 @@ public class Note extends LitePalSupport {
         this.title = title;
         this.content = content;
         this.noteTime = noteTime;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public long getId() {

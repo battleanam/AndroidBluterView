@@ -6,16 +6,20 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hanayue.ayuemobieview.R;
+import com.hanayue.ayuemobieview.amount.adapter.AmountStatAdpater;
 import com.hanayue.ayuemobieview.amount.model.Amount;
 import com.hanayue.ayuemobieview.amount.model.AmountStat;
 import com.hanayue.ayuemobieview.databinding.ActivityAmountAnalysisBinding;
 
 import org.litepal.LitePal;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -92,7 +96,7 @@ public class AmountAnalysisActivity extends AppCompatActivity {
         }
 
         showBarChart(keys, values);
-        onBarSelect(keys.size()-1, keys, values);
+        if (keys.size() > 0) onBarSelect(keys.size() - 1, keys, values);
     }
 
     /**
@@ -183,19 +187,26 @@ public class AmountAnalysisActivity extends AppCompatActivity {
      */
     private void onBarSelect(int columnIndex, List<String> xAxisKeys, List<Float> yAxisKeys) {
 
-        binding.time.setText(xAxisKeys.get(columnIndex));
-        binding.count.setText(String.format(Locale.getDefault(), "%.2f", yAxisKeys.get(columnIndex)));
+        if (xAxisKeys.size() > 0) {
+            binding.time.setText(xAxisKeys.get(columnIndex));
+            binding.count.setText(String.format(Locale.getDefault(), "%.2f", yAxisKeys.get(columnIndex)));
+        } else {
+            String time = DateFormat.getDateInstance(DateFormat.LONG).format(System.currentTimeMillis());
+            binding.time.setText(time.substring(0, time.indexOf("月") + 1));
+            binding.count.setText(String.format(Locale.getDefault(), "%.2f", 0f));
+        }
 
         List<Amount> amounts = LitePal
                 .where("userId = ? and timeStr like ? and type = ?", userInfo.getString("id"), xAxisKeys.get(columnIndex) + "%", type)
                 .find(Amount.class);
+
+
         Set<String> sourceTypes = new LinkedHashSet<>();
         for (Amount amount : amounts) {
             sourceTypes.add(amount.getSourceType());
         }
 
         List<AmountStat> stats = new ArrayList<>();
-
         for (String sourceType : sourceTypes) {
             float count = LitePal
                     .where("userId = ? and timeStr like ? and type = ? and sourceType = ?", userInfo.getString("id"), xAxisKeys.get(columnIndex) + "%", type, sourceType)
@@ -204,10 +215,16 @@ public class AmountAnalysisActivity extends AppCompatActivity {
             stats.add(stat);
         }
         showPieChart(stats, yAxisKeys.get(columnIndex));
+
+        AmountStatAdpater adpater = new AmountStatAdpater(stats, yAxisKeys.get(columnIndex));
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        binding.recyclerView.setLayoutManager(layoutManager);
+        binding.recyclerView.setAdapter(adpater);
     }
 
     /**
      * 展示饼图
+     *
      * @param stats 数据源
      * @param count 当月花费总量
      */

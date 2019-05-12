@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
+import com.hanayue.ayuemobieview.MainActivity;
 import com.hanayue.ayuemobieview.R;
 import com.hanayue.ayuemobieview.databinding.FragmentNoteListBinding;
 import com.hanayue.ayuemobieview.note.adapter.NoteAdapter;
@@ -25,7 +26,6 @@ import org.litepal.LitePal;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -34,6 +34,7 @@ import okhttp3.Response;
 public class NoteListFragment extends Fragment {
 
     FragmentNoteListBinding binding;
+    JSONObject userInfo;
 
     private List<Note> notes = new ArrayList<>();
     private NoteAdapter noteAdapter;
@@ -49,6 +50,7 @@ public class NoteListFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_note_list, container, false);
+        getUserInfo();
         initNotes();
         initView();
         return binding.getRoot();
@@ -89,13 +91,30 @@ public class NoteListFragment extends Fragment {
         binding.swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
         binding.swipeRefresh.setOnRefreshListener(this::refreshNotes);
 
-        binding.fab.setOnClickListener( v -> {
+        binding.fab.setOnClickListener(v -> {
             loadFromServer = !loadFromServer;
             editor.putString("LoadNoteFormServer", loadFromServer ? "1111" : "");
             editor.apply();
             binding.fab.setImageResource(loadFromServer ? R.mipmap.sd_storage : R.mipmap.storage);
             refreshNotes();
+            MainActivity activity = (MainActivity) getActivity();
+            activity.setTitle(loadFromServer ? "云便签管理" : "本地便签管理");
         });
+    }
+
+    /**
+     * 从简单存储中获取登录信息
+     */
+    private void getUserInfo() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String userInfoStr = preferences.getString("userInfo", null);
+        if (userInfoStr != null) userInfo = JSONObject.parseObject(userInfoStr);
+        else if (getActivity() != null) {
+            getActivity().runOnUiThread(() -> {
+                Toast.makeText(getActivity(), "未登录", Toast.LENGTH_SHORT).show();
+                getActivity().finish();
+            });
+        }
     }
 
     /**
@@ -111,10 +130,10 @@ public class NoteListFragment extends Fragment {
     private void refreshNotes() {
         new Thread(() -> {
             notes.clear();
-            if(loadFromServer){
+            if (loadFromServer) {
                 requesServer();
-            }else {
-                notes.addAll(LitePal.order("createTime desc").find(Note.class));
+            } else {
+                notes.addAll(LitePal.where("userId = ?", userInfo.getString("id")).order("createTime desc").find(Note.class));
                 getActivity().runOnUiThread(() -> {
                     noteAdapter.notifyDataSetChanged();
                     binding.swipeRefresh.setRefreshing(false);
@@ -126,42 +145,36 @@ public class NoteListFragment extends Fragment {
     /**
      * 从服务器获取数据
      */
-    private void requesServer(){
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String userInfo = preferences.getString("userInfo", null);
-        if(userInfo == null) {
-            getActivity().runOnUiThread(() -> Toast.makeText(getActivity(), "用户未登录", Toast.LENGTH_SHORT).show());
-            Objects.requireNonNull(getActivity()).finish();
-        }else {
-            String userId = JSONObject.parseObject(userInfo).getString("id");
-            JSONObject param = new JSONObject();
-            param.put("userId", userId);
-            HttpUtil.post(HttpUtil.NOTE_HOST_URL + "/selectListByParam", param.toJSONString(), new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    notes.clear();
-                    getActivity().runOnUiThread(() -> {
-                        Toast.makeText(getActivity(), "服务器连接失败", Toast.LENGTH_SHORT).show();
-                        noteAdapter.notifyDataSetChanged();
-                        binding.swipeRefresh.setRefreshing(false);
-                    });
-                }
+    private void requesServer() {
 
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    assert response.body() != null;
-                    String resStr = response.body().string();
-                    JSONObject res = JSONObject.parseObject(resStr);
-                    notes.clear();
-                    if(res.getIntValue("code") == 1000){
-                        notes.addAll(res.getJSONArray("data").toJavaList(Note.class));
-                    }
-                    getActivity().runOnUiThread(() -> {
-                        noteAdapter.notifyDataSetChanged();
-                        binding.swipeRefresh.setRefreshing(false);
-                    });
+        String userId = userInfo.getString("id");
+        JSONObject param = new JSONObject();
+        param.put("userId", userId);
+        HttpUtil.post(HttpUtil.NOTE_HOST_URL + "/selectListByParam", param.toJSONString(), new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                notes.clear();
+                getActivity().runOnUiThread(() -> {
+                    Toast.makeText(getActivity(), "服务器连接失败", Toast.LENGTH_SHORT).show();
+                    noteAdapter.notifyDataSetChanged();
+                    binding.swipeRefresh.setRefreshing(false);
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                assert response.body() != null;
+                String resStr = response.body().string();
+                JSONObject res = JSONObject.parseObject(resStr);
+                notes.clear();
+                if (res.getIntValue("code") == 1000) {
+                    notes.addAll(res.getJSONArray("data").toJavaList(Note.class));
                 }
-            });
-        }
+                getActivity().runOnUiThread(() -> {
+                    noteAdapter.notifyDataSetChanged();
+                    binding.swipeRefresh.setRefreshing(false);
+                });
+            }
+        });
     }
 }

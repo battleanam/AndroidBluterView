@@ -23,7 +23,7 @@
 
     	数据库的版本
     -->
-    <version value="4" />
+    <version value="8" />
 
     <!--
     	Define your models in the list with mapping tag, LitePal will
@@ -43,6 +43,7 @@
         <mapping class="com.hanayue.ayuemobieview.weather.model.County" />
         <mapping class="com.hanayue.ayuemobieview.note.model.Note" />
         <mapping class="com.hanayue.ayuemobieview.amount.model.Amount" />
+        <mapping class="com.hanayue.ayuemobieview.notice.model.Notice" />
     </list>
 
     <!--

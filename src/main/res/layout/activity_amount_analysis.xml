@@ -12,7 +12,7 @@
         <RelativeLayout
             android:id="@+id/title"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="60dp"
             android:layout_margin="16dp"
             android:gravity="center">
 
@@ -28,7 +28,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/time"
-                android:text="2328.37"
+                android:text="0.00"
                 android:textColor="#000"
                 android:textSize="32sp" />
 
@@ -55,7 +55,7 @@
         <lecho.lib.hellocharts.view.ColumnChartView
             android:id="@+id/column_chart"
             android:layout_width="wrap_content"
-            android:layout_height="200dp"
+            android:layout_height="160dp"
             android:layout_below="@id/line2" />
 
         <TextView
@@ -63,7 +63,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/column_chart"
-            android:layout_margin="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
             android:text="@string/支出分布" />
 
         <TextView
@@ -76,7 +78,7 @@
         <lecho.lib.hellocharts.view.PieChartView
             android:id="@+id/pie_chart"
             android:layout_width="wrap_content"
-            android:layout_height="200dp"
+            android:layout_height="160dp"
             android:layout_below="@id/line1"
             android:layout_margin="16dp" />
 
@@ -89,6 +91,7 @@
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"
+            android:layout_below="@id/line3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

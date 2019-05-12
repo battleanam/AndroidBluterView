@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -53,12 +52,6 @@ public class AmountFragment extends Fragment {
         getUserInfo();
         initTitle();
         loadData();
-        binding.recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
-        });
 
         binding.toMonthBtn.setOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -129,12 +122,6 @@ public class AmountFragment extends Fragment {
      */
     private void loadData() {
         List<AmountGroup> data = new ArrayList<>();
-//        int total = LitePal
-//                .where("userId = ?", userInfo.getString("id"))
-//                .order("noteTime desc")
-//                .select("timeStr")
-//                .count(Amount.class);
-//        int pageSize = 10;
         List<Amount> timeAmounts = LitePal
                 .where("userId = ?", userInfo.getString("id"))
                 .order("noteTime desc")
@@ -151,8 +138,6 @@ public class AmountFragment extends Fragment {
                     .find(Amount.class);
             data.add(new AmountGroup(time, amounts));
         }
-//          .limit(page)
-//                .offset((page - 1) * pageSize)
         if (groupAdapter == null) {
             this.data.addAll(data);
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
@@ -166,10 +151,6 @@ public class AmountFragment extends Fragment {
                 getActivity().runOnUiThread(() -> groupAdapter.notifyDataSetChanged());
             }
         }
-//            if (total - page * pageSize == total % pageSize) { // 如果到了最后一页 退出循环
-//                break;
-//            }
-//            page++;
 
     }
 

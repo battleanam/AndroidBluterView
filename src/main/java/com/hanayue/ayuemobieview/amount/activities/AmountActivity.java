@@ -95,9 +95,9 @@ public class AmountActivity extends AppCompatActivity {
         sourceTypes = "支出".equals(amount.getType()) ? EXPAND_SOURCE_TYPES : INCOME_SOURCE_TYPES;
         typeKeys = "支出".equals(amount.getType()) ? EXPAND_TYPE_KEYS : INCOME_TYPE_KEYS;
 
-        binding.toolbar.setTitle("");
         setSupportActionBar(binding.toolbar);
 
+        binding.toolbar.setTitle(("edit".equals(type) ? "修改" : "添加") + amount.getType());
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {

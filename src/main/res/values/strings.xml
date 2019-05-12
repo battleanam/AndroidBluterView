@@ -62,4 +62,10 @@
     <string name="查看月度报告">查看月度报告</string>
     <string name="minus">-</string>
     <string name="支出分布">支出分布</string>
+    <string name="标题">标题</string>
+    <string name="提醒时间">提醒时间</string>
+    <string name="提前">提前</string>
+    <string name="日">日</string>
+    <string name="退出登录">退出登录</string>
+    <string name="历史记录">历史记录</string>
 </resources>

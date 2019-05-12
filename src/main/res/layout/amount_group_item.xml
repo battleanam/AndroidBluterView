@@ -28,6 +28,7 @@
             android:id="@+id/amount_item_source_type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="#000"
             android:textStyle="bold"
             android:text="@string/立即注册" />
 
@@ -56,6 +57,7 @@
             android:id="@+id/amount_item_count"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="#000"
             android:textStyle="bold"
             android:gravity="end"
             android:text="@string/立即注册" />

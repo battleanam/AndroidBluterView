@@ -45,16 +45,31 @@ public class NoteActivity extends AppCompatActivity {
     private String type;
     private Note note;
     private boolean serverAlso = false; // 是否同时删除服务器备份
+    private JSONObject userInfo;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_note);
+        getUserInfo();
         initView();
         Intent intent = new Intent();
         intent.putExtra("res", R.id.nav_note);
         setResult(1, intent);
+    }
+
+    /**
+     * 从简单存储中获取登录信息
+     */
+    private void getUserInfo() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String userInfoStr = preferences.getString("userInfo", null);
+        if (userInfoStr != null) userInfo = JSONObject.parseObject(userInfoStr);
+        else {
+            Toast.makeText(this, "未登录", Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
 
     /**
@@ -67,7 +82,7 @@ public class NoteActivity extends AppCompatActivity {
 
         initNote(); // 初始化note 需要在拿到 type 后
 
-        binding.toolbar.setTitle("");
+        binding.toolbar.setTitle("edit".equals(type) ? "编辑便签" : "添加便签");
         setSupportActionBar(binding.toolbar);
 
 
@@ -204,8 +219,7 @@ public class NoteActivity extends AppCompatActivity {
 
                     if (serverAlso || onlyServer) {
                         // todo 访问后台接口删除备份
-                        String userInfo = preferences.getString("userInfo", null);
-                        String userId = JSONObject.parseObject(userInfo).getString("id");
+                        String userId = userInfo.getString("id");
                         JSONObject param = new JSONObject();
                         param.put("userId", userId);
                         param.put("noteId", note.getId());
@@ -222,13 +236,13 @@ public class NoteActivity extends AppCompatActivity {
                                         Toast.makeText(NoteActivity.this, "删除成功", Toast.LENGTH_SHORT).show();
                                         finish();
                                     });
-                                }else if(onlyServer){
+                                } else if (onlyServer) {
                                     assert response.body() != null;
                                     String resStr = response.body().string();
                                     JSONObject res = JSONObject.parseObject(resStr);
                                     runOnUiThread(() -> {
                                         Toast.makeText(NoteActivity.this, "删除成功", Toast.LENGTH_SHORT).show();
-                                        if(res.getIntValue("code") == 1000) finish();
+                                        if (res.getIntValue("code") == 1000) finish();
                                     });
 
                                 }
@@ -246,9 +260,7 @@ public class NoteActivity extends AppCompatActivity {
      */
     private void handleBackup() {
         JSONObject noteJson = new JSONObject();
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String userInfo = preferences.getString("userInfo", null);
-        String userId = JSONObject.parseObject(userInfo).getString("id");
+        String userId = userInfo.getString("id");
         noteJson.put("userId", userId);
         noteJson.put("noteId", note.getId());
         noteJson.put("title", note.getTitle());
@@ -275,6 +287,10 @@ public class NoteActivity extends AppCompatActivity {
      * 处理保存到本地
      */
     private void handleSave() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String loadFromServer = preferences.getString("LoadNoteFormServer", null);
+        boolean saveToServer = loadFromServer != null && loadFromServer.length() > 0;
+
         binding.noteLayout.clearFocus();
         hintKeyboard();
         setToolBarMenu("detail", binding.toolbar.getMenu());
@@ -284,9 +300,18 @@ public class NoteActivity extends AppCompatActivity {
         } else {
             note.setTitle(content.substring(0, 19));
         }
+        if (userInfo != null) {
+            note.setUserId(userInfo.getString("id"));
+        }
         note.setContent(content);
         note.setNoteTime(System.currentTimeMillis());
         binding.noteTime.setText(getNoteTime());
+
+        if(saveToServer){ // 如果查看服务器便签的化 点击保存后上传到服务器
+            handleBackup();
+            return;
+        }
+
         if ("add".equals(type)) {
             note.setCreateTime(System.currentTimeMillis());
             if (note.save()) Toast.makeText(this, "保存成功", Toast.LENGTH_SHORT).show();
@@ -296,7 +321,6 @@ public class NoteActivity extends AppCompatActivity {
                 Toast.makeText(this, "更新成功", Toast.LENGTH_SHORT).show();
             else Toast.makeText(this, "更新失败", Toast.LENGTH_SHORT).show();
         }
-
 
     }
 
