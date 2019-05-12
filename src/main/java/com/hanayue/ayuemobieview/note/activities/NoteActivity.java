@@ -218,7 +218,7 @@ public class NoteActivity extends AppCompatActivity {
                     }
 
                     if (serverAlso || onlyServer) {
-                        // todo 访问后台接口删除备份
+                        // 访问后台接口删除备份
                         String userId = userInfo.getString("id");
                         JSONObject param = new JSONObject();
                         param.put("userId", userId);

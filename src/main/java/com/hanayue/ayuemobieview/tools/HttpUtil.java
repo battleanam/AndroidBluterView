@@ -12,8 +12,8 @@ public class HttpUtil {
 
     private static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
-//    private static final String HOST_ADDRESS = "http://10.0.2.2:8081/";
-    private static final String HOST_ADDRESS = "http://192.168.0.2:8081/";
+    private static final String HOST_ADDRESS = "http://www.hanayue.xn--6qq986b3xl/service-hy/";
+//    private static final String HOST_ADDRESS = "http://192.168.0.2:8081/";
     public static final String LOCATION_HOST_URL = HOST_ADDRESS + "location";
     public static final String USER_HOST_URL = HOST_ADDRESS + "account";
     public static final String NOTE_HOST_URL = HOST_ADDRESS + "note";
